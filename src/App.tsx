@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import { MapContainer, TileLayer, Popup, Polyline } from 'react-leaflet'
 import './App.css';
-import axios from 'axios'
+import axios from 'axios';
 import polyline from '@mapbox/polyline'
 
 
@@ -10,7 +10,13 @@ function App() {
   interface Activity {
     activityPositions: any;
     activityName: string;
+    activityType: string;
     activityElevation: number;
+    activitySpeed: number;
+    activityDate: Date;
+    activityDistance: number;
+    activityTime: number;
+    //activityColor: string
   }
 
   const [activities, setActivities] = useState<Activity[]>([]);
@@ -38,8 +44,13 @@ function App() {
       for (let i = 0; i < stravaActivityResponse.data.length; i += 1) {
         const activity_polyline = stravaActivityResponse.data[i].map.summary_polyline;
         const activity_name = stravaActivityResponse.data[i].name;
-        const activity_elevation = stravaActivityResponse.data[i].total_elevation_gain;
-        polylines.push({activityPositions: polyline.decode(activity_polyline), activityName: activity_name, activityElevation: activity_elevation});
+        const activity_type = stravaActivityResponse.data[i].type;
+        const activity_date = new Date(stravaActivityResponse.data[i].start_date);
+        const activity_speed = stravaActivityResponse.data[i].average_speed*=2.23694;
+        const activity_time = stravaActivityResponse.data[i].elapsed_time*=0.0166667;
+        const activity_distance = stravaActivityResponse.data[i].distance*=0.000621371;
+        const activity_elevation = stravaActivityResponse.data[i].total_elevation_gain*=3.28084;
+        polylines.push({activityPositions: polyline.decode(activity_polyline), activityName: activity_name, activityElevation: activity_elevation,activityType: activity_type, activitySpeed: activity_speed, activityDate: activity_date, activityDistance: activity_distance, activityTime: activity_time});
       }
       //console.log(polylines)
       setActivities(polylines);
@@ -49,7 +60,7 @@ function App() {
   }, []);
 
   return (
-    <MapContainer center={[30.3322, -81.6557]} zoom={6} scrollWheelZoom={true}>
+    <MapContainer center={[35.0527, -78.8784]} zoom={5} scrollWheelZoom={true}>
     <TileLayer
       attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
       url='https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
@@ -60,8 +71,13 @@ function App() {
         <Popup>
           <div>
             <h2>{"Name: " + activity.activityName}</h2>
-            <p>{"Total Elevation Gain: " + activity.activityElevation}</p>
-            
+            <hr />
+            <h4>{"Date: " + activity.activityDate}</h4>
+            <h4>{"Activity Type: " + activity.activityType}</h4>
+            <h4>{"Distance: " + activity.activityDistance + " miles"}</h4>
+            <h4>{"Elapsed Time: " + activity.activityTime + " minutes"}</h4>
+            <h4>{"Average Speed: " + activity.activitySpeed + " mph"}</h4>
+            <h4>{"Elevation Gain: " + activity.activityElevation + " feet"}</h4>
           </div>
         </Popup>
       </Polyline>
