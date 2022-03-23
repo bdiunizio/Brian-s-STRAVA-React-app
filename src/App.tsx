@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet'
+import { MapContainer, TileLayer, Popup, Polyline } from 'react-leaflet'
 import './App.css';
 import axios from 'axios'
 import polyline from '@mapbox/polyline'
